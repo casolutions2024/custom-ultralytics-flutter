@@ -2,6 +2,7 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:ultralytics_yolo/predict/classify/classification_result.dart';
 import 'package:ultralytics_yolo/predict/detect/detected_object.dart';
 import 'package:ultralytics_yolo/ultralytics_yolo_platform_channel.dart';
+import 'dart:typed_data';
 
 /// The interface that implementations of ultralytics_yolo must implement.
 abstract class UltralyticsYoloPlatform extends PlatformInterface {
@@ -107,5 +108,10 @@ abstract class UltralyticsYoloPlatform extends PlatformInterface {
   /// Stream of frames per second (FPS) rate.
   Stream<double>? get fpsRateStream {
     throw UnimplementedError('fpsRateStream has not been implemented.');
+  }
+
+  /// Captures the camera.
+  Future<Uint8List?> captureCamera(int timeoutSec) {
+    throw UnimplementedError('captureCamera has not been implemented.');
   }
 }

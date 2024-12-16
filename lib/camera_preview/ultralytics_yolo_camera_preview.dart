@@ -105,25 +105,25 @@ class _UltralyticsYoloCameraPreviewState
               }
 
               switch (widget.predictor.runtimeType) {
-                case ObjectDetector:
-                  return StreamBuilder(
-                    stream: (widget.predictor! as ObjectDetector)
-                        .detectionResultStream,
-                    builder: (
-                      BuildContext context,
-                      AsyncSnapshot<List<DetectedObject?>?> snapshot,
-                    ) {
-                      if (snapshot.data == null) return Container();
-
-                      return CustomPaint(
-                        painter: ObjectDetectorPainter(
-                          snapshot.data! as List<DetectedObject>,
-                          widget.boundingBoxesColorList,
-                          widget.controller.value.strokeWidth,
-                        ),
-                      );
-                    },
-                  );
+                // case ObjectDetector:
+                //   return StreamBuilder(
+                //     stream: (widget.predictor! as ObjectDetector)
+                //         .detectionResultStream,
+                //     builder: (
+                //       BuildContext context,
+                //       AsyncSnapshot<List<DetectedObject?>?> snapshot,
+                //     ) {
+                //       if (snapshot.data == null) return Container();
+                //
+                //       return CustomPaint(
+                //         painter: ObjectDetectorPainter(
+                //           snapshot.data! as List<DetectedObject>,
+                //           widget.boundingBoxesColorList,
+                //           widget.controller.value.strokeWidth,
+                //         ),
+                //       );
+                //     },
+                //   );
                 case ImageClassifier:
                   return widget.classificationOverlay ??
                       StreamBuilder(

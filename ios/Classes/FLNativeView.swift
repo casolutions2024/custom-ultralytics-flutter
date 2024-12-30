@@ -31,25 +31,59 @@ class FLNativeView: NSObject, FlutterPlatformView {
   }
 
   private func startCameraPreview(position: AVCaptureDevice.Position) {
-    if !busy {
-      busy = true
+      if !busy {
+          busy = true
 
-      videoCapture.setUp(sessionPreset: .photo, position: position) { success in
-        // .hd4K3840x2160 or .photo (4032x3024)  Warning: 4k may not work on all devices i.e. 2019 iPod
-        if success {
-          // Add the video preview into the UI.
-          if let previewLayer = self.videoCapture.previewLayer {
-            self.previewView.layer.addSublayer(previewLayer)
-            self.videoCapture.previewLayer?.frame = self.previewView.bounds  // resize preview layer
+          // Check for ultra-wide camera availability
+          if let ultraWideCamera = AVCaptureDevice.default(.builtInUltraWideCamera, for: .video, position: position) {
+              // Use ultra-wide camera setup
+              videoCapture.setUp(sessionPreset: .photo, device: ultraWideCamera) { success in
+                  // Add the video preview into the UI.
+                  if success {
+                      if let previewLayer = self.videoCapture.previewLayer {
+                          self.previewView.layer.addSublayer(previewLayer)
+                          self.videoCapture.previewLayer?.frame = self.previewView.bounds
+                      }
+                      self.videoCapture.start()
+                  }
+                  self.busy = false
+              }
+          } else {
+              // Fallback to normal camera setup
+              videoCapture.setUp(sessionPreset: .photo, position: position) { success in
+                  if success {
+                      if let previewLayer = self.videoCapture.previewLayer {
+                          self.previewView.layer.addSublayer(previewLayer)
+                          self.videoCapture.previewLayer?.frame = self.previewView.bounds
+                      }
+                      self.videoCapture.start()
+                  }
+                  self.busy = false
+              }
           }
-
-          // Once everything is set up, we can start capturing live video.
-          self.videoCapture.start()
-
-          self.busy = false
-        }
       }
-    }
   }
+
+//   private func startCameraPreview(position: AVCaptureDevice.Position) {
+//     if !busy {
+//       busy = true
+//
+//       videoCapture.setUp(sessionPreset: .photo, position: position) { success in
+//         // .hd4K3840x2160 or .photo (4032x3024)  Warning: 4k may not work on all devices i.e. 2019 iPod
+//         if success {
+//           // Add the video preview into the UI.
+//           if let previewLayer = self.videoCapture.previewLayer {
+//             self.previewView.layer.addSublayer(previewLayer)
+//             self.videoCapture.previewLayer?.frame = self.previewView.bounds  // resize preview layer
+//           }
+//
+//           // Once everything is set up, we can start capturing live video.
+//           self.videoCapture.start()
+//
+//           self.busy = false
+//         }
+//       }
+//     }
+//   }
 
 }

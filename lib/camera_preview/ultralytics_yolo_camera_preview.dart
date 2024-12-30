@@ -45,18 +45,7 @@ class UltralyticsYoloCameraPreview extends StatefulWidget {
       _UltralyticsYoloCameraPreviewState();
 }
 
-class _UltralyticsYoloCameraPreviewState
-    extends State<UltralyticsYoloCameraPreview> {
-  final _ultralyticsYoloPlatform = UltralyticsYoloPlatform.instance;
-
-  double _currentZoomFactor = 1;
-
-  final double _zoomSensitivity = 0.05;
-
-  final double _minZoomLevel = 1;
-
-  final double _maxZoomLevel = 5;
-
+class _UltralyticsYoloCameraPreviewState extends State<UltralyticsYoloCameraPreview> {
   void _onPlatformViewCreated(_) {
     widget.onCameraCreated();
   }
@@ -147,43 +136,43 @@ class _UltralyticsYoloCameraPreviewState
               }
             }(),
 
-            // Zoom detector
-            GestureDetector(
-              onScaleUpdate: (details) {
-                if (details.pointerCount == 2) {
-                  // Calculate the new zoom factor
-                  var newZoomFactor = _currentZoomFactor * details.scale;
-
-                  // Adjust the sensitivity for zoom out
-                  if (newZoomFactor < _currentZoomFactor) {
-                    newZoomFactor = _currentZoomFactor -
-                        (_zoomSensitivity *
-                            (_currentZoomFactor - newZoomFactor));
-                  } else {
-                    newZoomFactor = _currentZoomFactor +
-                        (_zoomSensitivity *
-                            (newZoomFactor - _currentZoomFactor));
-                  }
-
-                  // Limit the zoom factor to a range between
-                  // _minZoomLevel and _maxZoomLevel
-                  final clampedZoomFactor =
-                      max(_minZoomLevel, min(_maxZoomLevel, newZoomFactor));
-
-                  // Update the zoom factor
-                  _ultralyticsYoloPlatform.setZoomRatio(clampedZoomFactor);
-
-                  // Update the current zoom factor for the next update
-                  _currentZoomFactor = clampedZoomFactor;
-                }
-              },
-              child: Container(
-                height: double.infinity,
-                width: double.infinity,
-                color: Colors.transparent,
-                child: const Center(child: Text('')),
-              ),
-            ),
+            // // Zoom detector
+            // GestureDetector(
+            //   onScaleUpdate: (details) {
+            //     if (details.pointerCount == 2) {
+            //       // Calculate the new zoom factor
+            //       var newZoomFactor = _currentZoomFactor * details.scale;
+            //
+            //       // Adjust the sensitivity for zoom out
+            //       if (newZoomFactor < _currentZoomFactor) {
+            //         newZoomFactor = _currentZoomFactor -
+            //             (_zoomSensitivity *
+            //                 (_currentZoomFactor - newZoomFactor));
+            //       } else {
+            //         newZoomFactor = _currentZoomFactor +
+            //             (_zoomSensitivity *
+            //                 (newZoomFactor - _currentZoomFactor));
+            //       }
+            //
+            //       // Limit the zoom factor to a range between
+            //       // _minZoomLevel and _maxZoomLevel
+            //       final clampedZoomFactor =
+            //           max(_minZoomLevel, min(_maxZoomLevel, newZoomFactor));
+            //
+            //       // Update the zoom factor
+            //       _ultralyticsYoloPlatform.setZoomRatio(clampedZoomFactor);
+            //
+            //       // Update the current zoom factor for the next update
+            //       _currentZoomFactor = clampedZoomFactor;
+            //     }
+            //   },
+            //   child: Container(
+            //     height: double.infinity,
+            //     width: double.infinity,
+            //     color: Colors.transparent,
+            //     child: const Center(child: Text('')),
+            //   ),
+            // ),
           ],
         );
       },

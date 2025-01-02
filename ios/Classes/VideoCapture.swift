@@ -29,6 +29,8 @@ public class VideoCapture: NSObject {
   let cameraQueue = DispatchQueue(label: "camera-queue")
   var lastCapturedPhoto: UIImage? = nil
 
+  private var torchEnabled = false
+
   public func setUp(
     sessionPreset: AVCaptureSession.Preset = .hd1280x720,
     position: AVCaptureDevice.Position,
@@ -41,6 +43,17 @@ public class VideoCapture: NSObject {
       }
     }
   }
+
+  public func setTorch(on: Bool) {
+          torchEnabled = on
+          guard let device = captureDevice, device.hasTorch else { return }
+
+          do {
+              try device.lockForConfiguration()
+              device.torchMode = torchEnabled ? .on : .off
+              device.unlockForConfiguration()
+          } catch {}
+      }
 
   func setUpCamera(sessionPreset: AVCaptureSession.Preset, position: AVCaptureDevice.Position)
     -> Bool
@@ -100,8 +113,8 @@ public class VideoCapture: NSObject {
     }
     captureDevice!.exposureMode = AVCaptureDevice.ExposureMode.continuousAutoExposure
 
-    if captureDevice!.hasTorch && captureDevice!.isTorchModeSupported(.on) {
-        captureDevice!.torchMode = .on
+    if captureDevice!.hasTorch {
+        captureDevice!.torchMode = torchEnabled ? .on : .off
     }
     captureDevice!.unlockForConfiguration()
 

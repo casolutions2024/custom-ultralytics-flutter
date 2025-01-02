@@ -8,23 +8,41 @@
 import Flutter
 
 class FLNativeViewFactory: NSObject, FlutterPlatformViewFactory {
-  private let videoCapture: VideoCapture
+    private var videoCapture: VideoCapture
 
-  init(videoCapture: VideoCapture) {
-    self.videoCapture = videoCapture
-    super.init()
-  }
+    init(videoCapture: VideoCapture) {
+        self.videoCapture = videoCapture
+        super.init()
+    }
 
-  func create(
-    withFrame frame: CGRect,
-    viewIdentifier viewId: Int64,
-    arguments args: Any?
-  ) -> FlutterPlatformView {
-    return FLNativeView(
-      frame: frame,
-      viewIdentifier: viewId,
-      arguments: args,
-      videoCapture: videoCapture
-    )
-  }
+    deinit {
+        videoCapture.cleanup()
+    }
+
+    func create(withFrame frame: CGRect, viewIdentifier viewId: Int64, arguments args: Any?) -> FlutterPlatformView {
+        let newVideoCapture = VideoCapture()
+        return FLNativeView(frame: frame, viewIdentifier: viewId, arguments: args, videoCapture: newVideoCapture)
+    }
 }
+
+//class FLNativeViewFactory: NSObject, FlutterPlatformViewFactory {
+//  private let videoCapture: VideoCapture
+//
+//  init(videoCapture: VideoCapture) {
+//    self.videoCapture = videoCapture
+//    super.init()
+//  }
+//
+//  func create(
+//    withFrame frame: CGRect,
+//    viewIdentifier viewId: Int64,
+//    arguments args: Any?
+//  ) -> FlutterPlatformView {
+//    return FLNativeView(
+//      frame: frame,
+//      viewIdentifier: viewId,
+//      arguments: args,
+//      videoCapture: videoCapture
+//    )
+//  }
+//}

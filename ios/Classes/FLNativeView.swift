@@ -9,10 +9,6 @@ class FLNativeView: NSObject, FlutterPlatformView {
   private let videoCapture: VideoCapture
   private var busy = false
 
-  deinit {
-      videoCapture.cleanup()
-  }
-
   init(
     frame: CGRect,
     viewIdentifier viewId: Int64,

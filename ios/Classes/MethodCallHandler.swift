@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import AVFoundation
 
 class MethodCallHandler: VideoCaptureDelegate, InferenceTimeListener, ResultsListener,
   FpsRateListener
@@ -78,29 +79,28 @@ class MethodCallHandler: VideoCaptureDelegate, InferenceTimeListener, ResultsLis
     }
   }
 
-private func captureFrameData(sampleBuffer: CMSampleBuffer) {
-    guard let device = AVCaptureDevice.default(for: .video) else { return }
+  private func captureFrameData(sampleBuffer: CMSampleBuffer) {
+      guard let device = AVCaptureDevice.default(for: AVMediaType.video) else { return }
 
-    do {
-        try device.lockForConfiguration()
-        if device.isFlashAvailable {
-            device.flashMode = .auto
-        }
-        device.unlockForConfiguration()
-    } catch {
-        print("Flash configuration error: \(error)")
-    }
+      do {
+          try device.lockForConfiguration()
+          if device.isFlashAvailable {
+              device.flashMode = AVCaptureDevice.FlashMode.auto
+          }
+          device.unlockForConfiguration()
+      } catch {
+          print("Flash configuration error: \(error)")
+      }
 
-    guard let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
-
-    let ciImage = CIImage(cvImageBuffer: imageBuffer)
-    let context = CIContext()
-    guard let cgImage = context.createCGImage(ciImage, from: ciImage.extent) else { return }
-
-    let uiImage = UIImage(cgImage: cgImage)
-    self.capturedFrameData = uiImage.pngData()
-    self.capturedFrameSemaphore.signal()
-}
+      // Rest of your existing code...
+      guard let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
+      let ciImage = CIImage(cvImageBuffer: imageBuffer)
+      let context = CIContext()
+      guard let cgImage = context.createCGImage(ciImage, from: ciImage.extent) else { return }
+      let uiImage = UIImage(cgImage: cgImage)
+      self.capturedFrameData = uiImage.pngData()
+      self.capturedFrameSemaphore.signal()
+  }
 
   private func loadModel(args: [String: Any], result: @escaping FlutterResult) async {
     let flutterError = FlutterError(

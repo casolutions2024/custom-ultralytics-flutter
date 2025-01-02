@@ -45,7 +45,7 @@ class FLNativeView: NSObject, FlutterPlatformView {
 
           // Once everything is set up, we can start capturing live video.
           self.videoCapture.start()
-          self.videoCapture.setTorch(on: true) // Add this line
+          self.videoCapture.setTorch(enabled: true) // Add this line
           self.busy = false
         }
       }

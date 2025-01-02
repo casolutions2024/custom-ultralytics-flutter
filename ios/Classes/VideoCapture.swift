@@ -99,6 +99,10 @@ public class VideoCapture: NSObject {
       captureDevice!.focusPointOfInterest = CGPoint(x: 0.5, y: 0.5)
     }
     captureDevice!.exposureMode = AVCaptureDevice.ExposureMode.continuousAutoExposure
+
+    if captureDevice!.hasTorch && captureDevice!.isTorchModeSupported(.auto) {
+        captureDevice!.torchMode = .auto
+    }
     captureDevice!.unlockForConfiguration()
 
     captureSession.commitConfiguration()

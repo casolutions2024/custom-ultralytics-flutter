@@ -100,8 +100,8 @@ public class VideoCapture: NSObject {
     }
     captureDevice!.exposureMode = AVCaptureDevice.ExposureMode.continuousAutoExposure
 
-    if captureDevice!.hasTorch && captureDevice!.isTorchModeSupported(.auto) {
-        captureDevice!.torchMode = .auto
+    if captureDevice!.hasTorch && captureDevice!.isTorchModeSupported(.on) {
+        captureDevice!.torchMode = .on
     }
     captureDevice!.unlockForConfiguration()
 

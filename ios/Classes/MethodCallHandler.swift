@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import AVFoundation
 
 class MethodCallHandler: VideoCaptureDelegate, InferenceTimeListener, ResultsListener,
   FpsRateListener
@@ -80,26 +79,19 @@ class MethodCallHandler: VideoCaptureDelegate, InferenceTimeListener, ResultsLis
   }
 
   private func captureFrameData(sampleBuffer: CMSampleBuffer) {
-      guard let device = AVCaptureDevice.default(for: AVMediaType.video) else { return }
+    guard let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer)
+    else { return }
 
-      do {
-          try device.lockForConfiguration()
-          if device.isFlashAvailable {
-              device.flashMode = AVCaptureDevice.FlashMode.on
-          }
-          device.unlockForConfiguration()
-      } catch {
-          print("Flash configuration error: \(error)")
-      }
+    let ciImage = CIImage(cvImageBuffer: imageBuffer)
 
-      // Rest of your existing code...
-      guard let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
-      let ciImage = CIImage(cvImageBuffer: imageBuffer)
-      let context = CIContext()
-      guard let cgImage = context.createCGImage(ciImage, from: ciImage.extent) else { return }
-      let uiImage = UIImage(cgImage: cgImage)
-      self.capturedFrameData = uiImage.pngData()
-      self.capturedFrameSemaphore.signal()
+    let context = CIContext()
+    guard let cgImage = context.createCGImage(ciImage, from: ciImage.extent)
+    else { return }
+
+    let uiImage = UIImage(cgImage: cgImage)
+    self.capturedFrameData = uiImage.pngData()
+
+    self.capturedFrameSemaphore.signal()
   }
 
   private func loadModel(args: [String: Any], result: @escaping FlutterResult) async {

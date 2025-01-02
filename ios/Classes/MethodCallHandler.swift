@@ -194,6 +194,15 @@ class MethodCallHandler: VideoCaptureDelegate, InferenceTimeListener, ResultsLis
       })
   }
 
+  private func setTorch(args: [String: Any], result: @escaping FlutterResult) {
+      guard let enabled = args["enabled"] as? Bool else {
+        result(FlutterError(code: "INVALID_ARGUMENT", message: "Invalid enabled value", details: nil))
+        return
+      }
+      videoCapture.setTorch(enabled: enabled)
+      result("Success")
+    }
+
   private func requestCameraCapture(args: [String: Any], result: @escaping FlutterResult) {
     let timeoutSec = args["timeoutSec"] as? Int ?? 3
 

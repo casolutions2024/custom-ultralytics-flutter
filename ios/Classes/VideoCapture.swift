@@ -31,6 +31,11 @@ public class VideoCapture: NSObject {
 
   private var torchEnabled = false
 
+  public func cleanup() {
+      stop()
+      setTorch(on: false)
+  }
+
   public func setUp(
     sessionPreset: AVCaptureSession.Preset = .hd1280x720,
     position: AVCaptureDevice.Position,

@@ -36,9 +36,14 @@ class FLNativeView: NSObject, FlutterPlatformView {
 
           // Check for ultra-wide camera availability
           if let ultraWideCamera = AVCaptureDevice.default(.builtInUltraWideCamera, for: .video, position: position) {
-              // Use ultra-wide camera setup
-              videoCapture.setUp(sessionPreset: .photo, device: ultraWideCamera) { success in
-                  // Add the video preview into the UI.
+              // Enable torch if available
+              if ultraWideCamera.hasTorch {
+                  try? ultraWideCamera.lockForConfiguration()
+                  ultraWideCamera.torchMode = .auto
+                  ultraWideCamera.unlockForConfiguration()
+              }
+
+              videoCapture.setUp(sessionPreset: .photo, position: position) { success in
                   if success {
                       if let previewLayer = self.videoCapture.previewLayer {
                           self.previewView.layer.addSublayer(previewLayer)
@@ -49,7 +54,14 @@ class FLNativeView: NSObject, FlutterPlatformView {
                   self.busy = false
               }
           } else {
-              // Fallback to normal camera setup
+              // Fallback case with torch handling
+              if let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: position),
+                 device.hasTorch {
+                  try? device.lockForConfiguration()
+                  device.torchMode = .auto
+                  device.unlockForConfiguration()
+              }
+
               videoCapture.setUp(sessionPreset: .photo, position: position) { success in
                   if success {
                       if let previewLayer = self.videoCapture.previewLayer {
@@ -63,6 +75,39 @@ class FLNativeView: NSObject, FlutterPlatformView {
           }
       }
   }
+
+//   private func startCameraPreview(position: AVCaptureDevice.Position) {
+//       if !busy {
+//           busy = true
+//
+//           // Check for ultra-wide camera availability
+//           if let ultraWideCamera = AVCaptureDevice.default(.builtInUltraWideCamera, for: .video, position: position) {
+//               // Instead of passing the device directly, pass the position
+//               videoCapture.setUp(sessionPreset: .photo, position: position) { success in
+//                   if success {
+//                       if let previewLayer = self.videoCapture.previewLayer {
+//                           self.previewView.layer.addSublayer(previewLayer)
+//                           self.videoCapture.previewLayer?.frame = self.previewView.bounds
+//                       }
+//                       self.videoCapture.start()
+//                   }
+//                   self.busy = false
+//               }
+//           } else {
+//               // Fallback case (this part is already correct)
+//               videoCapture.setUp(sessionPreset: .photo, position: position) { success in
+//                   if success {
+//                       if let previewLayer = self.videoCapture.previewLayer {
+//                           self.previewView.layer.addSublayer(previewLayer)
+//                           self.videoCapture.previewLayer?.frame = self.previewView.bounds
+//                       }
+//                       self.videoCapture.start()
+//                   }
+//                   self.busy = false
+//               }
+//           }
+//       }
+//   }
 
 //   private func startCameraPreview(position: AVCaptureDevice.Position) {
 //     if !busy {

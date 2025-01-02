@@ -62,6 +62,8 @@ class MethodCallHandler: VideoCaptureDelegate, InferenceTimeListener, ResultsLis
       predictOnImage(args: args, result: result)
     } else if call.method == "captureCamera" {
       requestCameraCapture(args: args, result: result)
+    } else if call.method == "setTorch" {
+      setTorch(args: args, result: result)
     }
   }
 

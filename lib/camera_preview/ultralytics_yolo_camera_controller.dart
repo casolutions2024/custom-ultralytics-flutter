@@ -72,4 +72,9 @@ class UltralyticsYoloCameraController
   Future<void> pauseLivePrediction() async {
     await _ultralyticsYoloPlatform.pauseLivePrediction();
   }
+
+  /// Controls the torch (flashlight)
+  Future<void> setTorch(bool enabled) async {
+    await _ultralyticsYoloPlatform.setTorch(enabled);
+  }
 }

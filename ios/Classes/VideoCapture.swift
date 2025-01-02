@@ -29,11 +29,21 @@ public class VideoCapture: NSObject {
   let cameraQueue = DispatchQueue(label: "camera-queue")
   var lastCapturedPhoto: UIImage? = nil
 
-  private var torchEnabled = false
+  public func setTorch(enabled: Bool) {
+    guard let device = captureDevice, device.hasTorch else { return }
+
+    do {
+      try device.lockForConfiguration()
+      device.torchMode = enabled ? .on : .off
+      device.unlockForConfiguration()
+    } catch {
+      print("Error setting torch: \(error)")
+    }
+  }
 
   public func cleanup() {
-      stop()
-      setTorch(on: false)
+    stop()
+    setTorch(enabled: false)
   }
 
   public func setUp(
@@ -48,17 +58,6 @@ public class VideoCapture: NSObject {
       }
     }
   }
-
-  public func setTorch(on: Bool) {
-          torchEnabled = on
-          guard let device = captureDevice, device.hasTorch else { return }
-
-          do {
-              try device.lockForConfiguration()
-              device.torchMode = torchEnabled ? .on : .off
-              device.unlockForConfiguration()
-          } catch {}
-      }
 
   func setUpCamera(sessionPreset: AVCaptureSession.Preset, position: AVCaptureDevice.Position)
     -> Bool
@@ -94,34 +93,25 @@ public class VideoCapture: NSObject {
       photoOutput.isLivePhotoCaptureEnabled = photoOutput.isLivePhotoCaptureSupported
     }
 
-    // We want the buffers to be in portrait orientation otherwise they are
-    // rotated by 90 degrees. Need to set this _after_ addOutput()!
-    // let curDeviceOrientation = UIDevice.current.orientation
     let connection = videoOutput.connection(with: AVMediaType.video)
     connection?.videoOrientation = .portrait
     if position == .front {
       connection?.isVideoMirrored = true
     }
 
-    // Configure captureDevice
     do {
       try captureDevice!.lockForConfiguration()
+      if captureDevice!.isFocusModeSupported(AVCaptureDevice.FocusMode.continuousAutoFocus),
+        captureDevice!.isFocusPointOfInterestSupported
+      {
+        captureDevice!.focusMode = AVCaptureDevice.FocusMode.continuousAutoFocus
+        captureDevice!.focusPointOfInterest = CGPoint(x: 0.5, y: 0.5)
+      }
+      captureDevice!.exposureMode = AVCaptureDevice.ExposureMode.continuousAutoExposure
+      captureDevice!.unlockForConfiguration()
     } catch {
-      print("device configuration not working")
+      print("Error configuring device: \(error)")
     }
-    // captureDevice.setFocusModeLocked(lensPosition: 1.0, completionHandler: { (time) -> Void in })
-    if captureDevice!.isFocusModeSupported(AVCaptureDevice.FocusMode.continuousAutoFocus),
-      captureDevice!.isFocusPointOfInterestSupported
-    {
-      captureDevice!.focusMode = AVCaptureDevice.FocusMode.continuousAutoFocus
-      captureDevice!.focusPointOfInterest = CGPoint(x: 0.5, y: 0.5)
-    }
-    captureDevice!.exposureMode = AVCaptureDevice.ExposureMode.continuousAutoExposure
-
-    if captureDevice!.hasTorch {
-        captureDevice!.torchMode = torchEnabled ? .on : .off
-    }
-    captureDevice!.unlockForConfiguration()
 
     captureSession.commitConfiguration()
     return true

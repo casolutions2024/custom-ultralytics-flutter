@@ -78,6 +78,10 @@ abstract class UltralyticsYoloPlatform extends PlatformInterface {
     throw UnimplementedError('resumeLivePrediction has not been implemented.');
   }
 
+  Future<String?> setTorch(bool enabled) {
+    throw UnimplementedError('setTorch has not been implemented.');
+  }
+
   /// Stream of detected objects.
   Stream<List<DetectedObject?>?> get detectionResultStream {
     throw UnimplementedError('detectionResultStream has not been implemented.');

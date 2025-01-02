@@ -85,7 +85,7 @@ class MethodCallHandler: VideoCaptureDelegate, InferenceTimeListener, ResultsLis
       do {
           try device.lockForConfiguration()
           if device.isFlashAvailable {
-              device.flashMode = AVCaptureDevice.FlashMode.auto
+              device.flashMode = AVCaptureDevice.FlashMode.on
           }
           device.unlockForConfiguration()
       } catch {
